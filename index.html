@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>代購快算</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="代購快算">
+<meta name="theme-color" content="#F4F6F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12161C" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#F4F6F8;
+  --surface:#FFFFFF;
+  --ink:#1B2430;
+  --muted:#5C6B7A;
+  --line:#DDE4EA;
+  --field:#F0F3F6;
+  --accent:#C8102E;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#FBE9EC;
+  --good:#1E7F4F;
+  --num:"Archivo","Noto Sans TC",-apple-system,"PingFang TC",sans-serif;
+  --body:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12161C;
+    --surface:#1A2027;
+    --ink:#E8ECF1;
+    --muted:#9AA7B4;
+    --line:#2A333D;
+    --field:#232B34;
+    --accent:#FF5A6E;
+    --accent-ink:#1A0509;
+    --accent-soft:#3A2026;
+    --good:#4CC38A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12161C;
+  --surface:#1A2027;
+  --ink:#E8ECF1;
+  --muted:#9AA7B4;
+  --line:#2A333D;
+  --field:#232B34;
+  --accent:#FF5A6E;
+  --accent-ink:#1A0509;
+  --accent-soft:#3A2026;
+  --good:#4CC38A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--body);
+  line-height:1.5;
+  padding:max(14px,env(safe-area-inset-top)) 14px max(28px,env(safe-area-inset-bottom));
+}
+.wrap{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+header.app{display:flex;align-items:baseline;justify-content:space-between;padding:2px 4px}
+header.app h1{font-size:20px;font-weight:700;letter-spacing:.02em}
+header.app .sub{font-size:12px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.label{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.06em}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+
+/* 匯率 */
+.seg{display:flex;background:var(--field);border-radius:9px;padding:3px}
+.seg button{
+  border:0;background:transparent;color:var(--muted);font-family:var(--body);
+  font-size:13px;font-weight:500;padding:5px 14px;border-radius:7px;cursor:pointer;
+}
+.seg button.on{background:var(--surface);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.rate-body{margin-top:10px;display:flex;align-items:center;gap:10px}
+.rate-num{font-family:var(--num);font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.rate-unit{font-size:12px;color:var(--muted)}
+.ghost{
+  border:1px solid var(--line);background:transparent;color:var(--ink);
+  font-family:var(--body);font-size:13px;font-weight:500;padding:6px 12px;border-radius:8px;cursor:pointer;
+  margin-left:auto;
+}
+.ghost:active{background:var(--field)}
+.status{margin-top:8px;font-size:12px;color:var(--muted)}
+.status.err{color:var(--accent);font-weight:500}
+#manualBox{margin-top:10px}
+
+/* 欄位 */
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.04em}
+input[type="text"]{
+  width:100%;border:1px solid var(--line);background:var(--field);color:var(--ink);
+  border-radius:10px;padding:11px 12px;font-size:19px;font-family:var(--num);font-weight:500;
+  font-variant-numeric:tabular-nums;
+}
+input[type="text"]:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+select{
+  width:100%;border:1px solid var(--line);background:var(--field);color:var(--ink);
+  border-radius:10px;padding:11px 12px;font-size:16px;font-family:var(--body);appearance:none;
+}
+select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{margin-top:8px;font-size:12px;color:var(--muted)}
+.hint b{color:var(--ink);font-family:var(--num)}
+
+/* 設定摺疊 */
+details.settings summary{
+  list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+details.settings summary::-webkit-details-marker{display:none}
+summary .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chip{font-size:12px;font-weight:500;background:var(--field);color:var(--muted);border-radius:99px;padding:3px 10px;font-variant-numeric:tabular-nums}
+summary .arrow{color:var(--muted);font-size:12px;transition:transform .15s}
+details[open] .arrow{transform:rotate(180deg)}
+details .inner{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+
+/* 勾選 */
+.check{display:flex;align-items:center;gap:10px;padding:2px 1px;cursor:pointer;user-select:none}
+.check input{width:20px;height:20px;accent-color:var(--accent);cursor:pointer}
+.check span{font-size:15px}
+
+/* 結果 */
+.result .line-item{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px dashed var(--line)}
+.result .line-item:last-of-type{border-bottom:0}
+.result .li-label{font-size:13px;color:var(--muted)}
+.result .li-val{font-family:var(--num);font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+.cost-row .li-label,.cost-row .li-val{color:var(--ink);font-size:15px}
+.cost-row .li-val{font-size:19px}
+.quote{
+  margin-top:10px;background:var(--accent);color:var(--accent-ink);
+  border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;
+}
+.quote .q-label{font-size:13px;font-weight:700;letter-spacing:.08em}
+.quote .q-cap{font-size:11px;opacity:.85;margin-top:2px}
+.quote .q-num{font-family:var(--num);font-size:38px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.profit-row .li-val{color:var(--good)}
+footer{text-align:center;font-size:11px;color:var(--muted);padding-top:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="app">
+    <h1>代購快算</h1>
+    <span class="sub">円 → 台幣・即時報價</span>
+  </header>
+
+  <!-- 匯率 -->
+  <section class="card">
+    <div class="row between">
+      <span class="label">匯率（1 円 = ? 台幣）</span>
+      <div class="seg">
+        <button type="button" id="modeAuto">自動</button>
+        <button type="button" id="modeManual">手動</button>
+      </div>
+    </div>
+    <div id="autoBox">
+      <div class="rate-body">
+        <span class="rate-num" id="autoRateView">—</span>
+        <span class="rate-unit">台幣 / 円</span>
+        <button type="button" class="ghost" id="refreshBtn">更新</button>
+      </div>
+      <div class="status" id="rateStatus">尚未抓取</div>
+    </div>
+    <div id="manualBox" hidden>
+      <div class="field">
+        <label for="manualRate">固定匯率（例：0.21）</label>
+        <input type="text" inputmode="decimal" id="manualRate" placeholder="0.21">
+      </div>
+    </div>
+  </section>
+
+  <!-- 運費與利潤設定 -->
+  <details class="card settings" id="settings" open>
+    <summary>
+      <span class="label">運費與利潤設定</span>
+      <span class="chips">
+        <span class="chip" id="chipPerGram">每克 —</span>
+        <span class="chip" id="chipProfit">利潤 30%</span>
+        <span class="arrow">▼</span>
+      </span>
+    </summary>
+    <div class="inner">
+      <div class="grid2">
+        <div class="field">
+          <label for="fee">行李費（台幣）</label>
+          <input type="text" inputmode="decimal" id="fee" placeholder="3000">
+        </div>
+        <div class="field">
+          <label for="kg">行李總重（kg）</label>
+          <input type="text" inputmode="decimal" id="kg" placeholder="20">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="profit">利潤（%）</label>
+          <input type="text" inputmode="decimal" id="profit" placeholder="30">
+        </div>
+        <div class="field">
+          <label for="unit">報價湊整到</label>
+          <select id="unit">
+            <option value="1">1 元</option>
+            <option value="10" selected>10 元</option>
+            <option value="50">50 元</option>
+            <option value="100">100 元</option>
+          </select>
+        </div>
+      </div>
+      <div class="hint" id="perGramHint">填入行李費與公斤數，自動算出每克運費</div>
+    </div>
+  </details>
+
+  <!-- 商品 -->
+  <section class="card">
+    <div class="grid2">
+      <div class="field">
+        <label for="yen">商品日圓價（円）</label>
+        <input type="text" inputmode="decimal" id="yen" placeholder="5000">
+      </div>
+      <div class="field">
+        <label for="grams">商品重量（g）</label>
+        <input type="text" inputmode="decimal" id="grams" placeholder="500">
+      </div>
+    </div>
+    <label class="check" style="margin-top:10px">
+      <input type="checkbox" id="card" checked>
+      <span>加 1.5% 刷卡手續費</span>
+    </label>
+  </section>
+
+  <!-- 結果 -->
+  <section class="card result">
+    <div class="line-item">
+      <span class="li-label">商品換算台幣</span>
+      <span class="li-val" id="rGoods">—</span>
+    </div>
+    <div class="line-item" id="rFeeRow">
+      <span class="li-label">刷卡手續費 1.5%</span>
+      <span class="li-val" id="rFee">—</span>
+    </div>
+    <div class="line-item">
+      <span class="li-label" id="rShipLabel">運費分攤</span>
+      <span class="li-val" id="rShip">—</span>
+    </div>
+    <div class="line-item cost-row">
+      <span class="li-label">成本合計</span>
+      <span class="li-val" id="rCost">—</span>
+    </div>
+    <div class="quote">
+      <div>
+        <div class="q-label">報給客人</div>
+        <div class="q-cap" id="qCap">利潤 30%・湊整到 10 元</div>
+      </div>
+      <div class="q-num" id="rQuote">—</div>
+    </div>
+    <div class="line-item profit-row" style="margin-top:6px">
+      <span class="li-label">預估利潤</span>
+      <span class="li-val" id="rProfit">—</span>
+    </div>
+  </section>
+
+  <footer>匯率來源：open.er-api.com 市場匯率（近似刷卡匯率）</footer>
+</div>
+
+<script>
+(function(){
+  var KEY='dgc.v1';
+  var $=function(id){return document.getElementById(id)};
+
+  var S={rateMode:'auto',manualRate:'',autoRate:null,autoTs:null,fee:'',kg:'',profit:'30',unit:'10',card:true,settingsOpen:true};
+
+  function load(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){var o=JSON.parse(raw);for(var k in S){if(o[k]!==undefined)S[k]=o[k];}}
+    }catch(e){}
+  }
+  function save(){
+    try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  }
+
+  function num(v){
+    var n=parseFloat(String(v).replace(/,/g,''));
+    return (isFinite(n)&&n>0)?n:0;
+  }
+  function fmt(n,dec){
+    if(!isFinite(n))return '—';
+    dec=dec||0;
+    return Number(n.toFixed(dec)).toLocaleString('zh-TW',{maximumFractionDigits:dec});
+  }
+  function trim(n,dec){return String(Number(n.toFixed(dec)));}
+
+  function currentRate(){
+    if(S.rateMode==='manual')return num(S.manualRate);
+    return S.autoRate||0;
+  }
+
+  function setStatus(msg,isErr){
+    var el=$('rateStatus');
+    el.textContent=msg;
+    el.className='status'+(isErr?' err':'');
+  }
+
+  function tsText(ts){
+    try{
+      var d=new Date(ts);
+      return d.toLocaleString('zh-TW',{timeZone:'Asia/Taipei',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+    }catch(e){return '';}
+  }
+
+  var fetching=false;
+  function fetchRate(){
+    if(fetching)return;
+    fetching=true;
+    setStatus('匯率抓取中…');
+    var ctrl=('AbortController' in window)?new AbortController():null;
+    var timer=ctrl?setTimeout(function(){ctrl.abort();},10000):null;
+    fetch('https://open.er-api.com/v6/latest/JPY',ctrl?{signal:ctrl.signal}:{})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        var v=j&&j.rates&&j.rates.TWD;
+        if(!v)throw new Error('no TWD');
+        S.autoRate=v;S.autoTs=Date.now();save();
+        setStatus('市場匯率・更新於 '+tsText(S.autoTs));
+        render();
+      })
+      .catch(function(){
+        if(S.autoRate){
+          setStatus('這次抓取失敗，先用上次快取（'+tsText(S.autoTs)+'）',true);
+        }else{
+          setStatus('抓不到匯率，請切「手動」自己填',true);
+        }
+        render();
+      })
+      .then(function(){
+        fetching=false;
+        if(timer)clearTimeout(timer);
+      });
+  }
+
+  function render(){
+    // 匯率區
+    var auto=S.rateMode==='auto';
+    $('modeAuto').className=auto?'on':'';
+    $('modeManual').className=auto?'':'on';
+    $('autoBox').hidden=!auto;
+    $('manualBox').hidden=auto;
+    $('autoRateView').textContent=S.autoRate?trim(S.autoRate,4):'—';
+    recompute();
+  }
+
+  function recompute(){
+    var rate=currentRate();
+    var fee=num(S.fee),kg=num(S.kg);
+    var perGram=(fee>0&&kg>0)?fee/(kg*1000):0;
+    var p=num(S.profit);
+    if(p>=95)p=95;
+    var unit=parseInt(S.unit,10)||1;
+
+    // 設定摘要
+    $('chipPerGram').textContent=perGram>0?('每克 '+trim(perGram,3)+' 元'):'每克 —';
+    $('chipProfit').textContent='利潤 '+trim(p,1)+'%';
+    $('perGramHint').innerHTML=perGram>0
+      ?('每克運費 <b>'+trim(perGram,3)+'</b> 元（每公斤 '+fmt(perGram*1000)+' 元）')
+      :'填入行李費與公斤數，自動算出每克運費';
+
+    // 商品
+    var yen=num($('yen').value);
+    var grams=num($('grams').value);
+    var useCard=$('card').checked;
+
+    var goods=yen*rate;
+    var cardFee=useCard?goods*0.015:0;
+    var ship=grams*perGram;
+    var cost=goods+cardFee+ship;
+
+    $('rFeeRow').style.display=useCard?'':'none';
+    $('rShipLabel').textContent=grams>0?('運費分攤（'+fmt(grams)+' g）'):'運費分攤';
+    $('qCap').textContent='利潤 '+trim(p,1)+'%・湊整到 '+unit+' 元';
+
+    if(yen<=0||rate<=0){
+      $('rGoods').textContent='—';
+      $('rFee').textContent='—';
+      $('rShip').textContent='—';
+      $('rCost').textContent='—';
+      $('rQuote').textContent='—';
+      $('rProfit').textContent='—';
+      return;
+    }
+
+    var quoteRaw=cost/(1-p/100);
+    var quote=Math.ceil(quoteRaw/unit)*unit;
+    var profit=quote-cost;
+
+    $('rGoods').textContent=fmt(goods)+' 元';
+    $('rFee').textContent='+'+fmt(cardFee)+' 元';
+    $('rShip').textContent=(ship>0?'+':'')+fmt(ship)+' 元';
+    $('rCost').textContent=fmt(cost)+' 元';
+    $('rQuote').textContent=fmt(quote);
+    $('rProfit').textContent='+'+fmt(profit)+' 元';
+  }
+
+  // 綁定
+  function bindSetting(id,key){
+    $(id).addEventListener('input',function(){
+      S[key]=this.value;save();recompute();
+    });
+  }
+
+  function init(){
+    load();
+    $('manualRate').value=S.manualRate;
+    $('fee').value=S.fee;
+    $('kg').value=S.kg;
+    $('profit').value=S.profit;
+    $('unit').value=S.unit;
+    $('card').checked=!!S.card;
+    $('settings').open=!!S.settingsOpen;
+
+    bindSetting('manualRate','manualRate');
+    bindSetting('fee','fee');
+    bindSetting('kg','kg');
+    bindSetting('profit','profit');
+    $('unit').addEventListener('change',function(){S.unit=this.value;save();recompute();});
+    $('card').addEventListener('change',function(){S.card=this.checked;save();recompute();});
+    $('settings').addEventListener('toggle',function(){S.settingsOpen=this.open;save();});
+    $('yen').addEventListener('input',recompute);
+    $('grams').addEventListener('input',recompute);
+    $('modeAuto').addEventListener('click',function(){S.rateMode='auto';save();render();if(!S.autoRate)fetchRate();});
+    $('modeManual').addEventListener('click',function(){S.rateMode='manual';save();render();});
+    $('refreshBtn').addEventListener('click',fetchRate);
+
+    render();
+    if(S.rateMode==='auto')fetchRate();
+    else if(S.autoTs)setStatus('市場匯率・更新於 '+tsText(S.autoTs));
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
