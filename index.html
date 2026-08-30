@@ -360,7 +360,6 @@ footer{text-align:center;font-size:11px;color:var(--muted);padding-top:4px}
     var fee=num(S.fee),kg=num(S.kg);
     var perGram=(fee>0&&kg>0)?fee/(kg*1000):0;
     var p=num(S.profit);
-    if(p>=95)p=95;
     var unit=parseInt(S.unit,10)||1;
 
     // 設定摘要
@@ -394,7 +393,7 @@ footer{text-align:center;font-size:11px;color:var(--muted);padding-top:4px}
       return;
     }
 
-    var quoteRaw=cost/(1-p/100);
+    var quoteRaw=cost*(1+p/100);
     var quote=Math.ceil(quoteRaw/unit)*unit;
     var profit=quote-cost;
 
