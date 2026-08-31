@@ -381,7 +381,7 @@ footer{text-align:center;font-size:11px;color:var(--muted);padding-top:4px}
 
     $('rFeeRow').style.display=useCard?'':'none';
     $('rShipLabel').textContent=grams>0?('運費分攤（'+fmt(grams)+' g）'):'運費分攤';
-    $('qCap').textContent='利潤 '+trim(p,1)+'%・湊整到 '+unit+' 元';
+    $('qCap').textContent='商品加成 '+trim(p,1)+'%・運費另計・湊 '+unit+' 元';
 
     if(yen<=0||rate<=0){
       $('rGoods').textContent='—';
@@ -393,7 +393,7 @@ footer{text-align:center;font-size:11px;color:var(--muted);padding-top:4px}
       return;
     }
 
-    var quoteRaw=cost*(1+p/100);
+    var quoteRaw=(goods+cardFee)*(1+p/100)+ship;
     var quote=Math.ceil(quoteRaw/unit)*unit;
     var profit=quote-cost;
 
